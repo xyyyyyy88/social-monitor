@@ -2,17 +2,13 @@
   "微博-示例账号": [
     "ERR"
   ],
-  "抖音-示例账号A": [
-    "ERR"
-  ],
+  "抖音-示例账号A": [],
   "小红书-示例账号": [
-    "ERR"
+    "https://www.xiaohongshu.com/explore/6a45dad300000000080315e8",
+    "https://www.xiaohongshu.com/explore/6a45da22000000002100938f",
+    "https://www.xiaohongshu.com/explore/6a45d972000000000800296d"
   ],
-  "快手-示例账号": [
-    "ERR"
-  ],
-  "抖音-示例账号B": [
-    "ERR"
-  ],
+  "快手-示例账号": [],
+  "抖音-示例账号B": [],
   "__heartbeat": "2026-08-28"
 }
