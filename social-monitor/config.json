@@ -1,0 +1,44 @@
+{
+  "targets": [
+    {
+      "name": "微博-示例账号",
+      "platform": "weibo",
+      "url": "https://weibo.com/u/7578949290"
+    },
+    {
+      "name": "抖音-示例账号A",
+      "platform": "douyin",
+      "url": "https://www.douyin.com/user/MS4wLjABAAAAigE7JKzVlLbZY7Nnj6dUoXk_5BDmUUeJKA-idICtzBP6QouMEUdTYaAgrkPktV0p"
+    },
+    {
+      "name": "小红书-示例账号",
+      "platform": "xiaohongshu",
+      "url": "https://www.xiaohongshu.com/user/profile/69acfe19000000003401a8ae"
+    },
+    {
+      "name": "快手-示例账号",
+      "platform": "kuaishou",
+      "url": "https://estplca.m.chenzhongtech.com/fw/user/3xrhqxc3cnu33i4"
+    },
+    {
+      "name": "抖音-示例账号B",
+      "platform": "douyin",
+      "url": "https://www.douyin.com/user/MS4wLjABAAAAJisjJc3xVJ4AqQwtWFxeE4E8FljhX7MCxRPgVnI7QIyNSDDV98u95_rgAiwTKf9J"
+    }
+  ],
+  "dingtalk": {
+    "webhook": "${DINGTALK_WEBHOOK}",
+    "secret": "${DINGTALK_SECRET}"
+  },
+  "store": {
+    "type": "local",
+    "path": "data/snapshots.json"
+  },
+  "cookies_env": "DTC_COOKIES",
+  "heartbeat": true,
+  "selectors": {
+    "douyin": "li[data-e2e=\"user-post-item\"], div[data-e2e=\"user-post-item\"]",
+    "xiaohongshu": "section.note-item",
+    "kuaishou": "div[data-e2e=\"feed-item\"], div.video-card"
+  }
+}

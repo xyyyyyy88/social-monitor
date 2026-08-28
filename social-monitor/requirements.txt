@@ -1,0 +1,5 @@
+# 运行依赖（无头浏览器 + 可选 COS）
+playwright>=1.40
+
+# 仅当 store.type=cos 时才需要（腾讯云对象存储，保证云函数冷启动后快照不丢）
+# cos-python-sdk-v5>=1.9.30
