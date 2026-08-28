@@ -23,11 +23,13 @@ jobs:
           path: ~/.cache/ms-playwright
           key: pw-${{ runner.os }}-chromium-v1
       - name: Install deps
+        working-directory: social-monitor
         run: |
           python -m pip install --upgrade pip
           pip install -r requirements.txt
           playwright install chromium
       - name: Run monitor
+        working-directory: social-monitor
         env:
           DINGTALK_WEBHOOK: ${{ secrets.DINGTALK_WEBHOOK }}
           DINGTALK_SECRET: ${{ secrets.DINGTALK_SECRET }}
@@ -37,7 +39,7 @@ jobs:
         run: |
           git config user.name "github-actions[bot]"
           git config user.email "github-actions[bot]@users.noreply.github.com"
-          git add data/snapshots.json
+          git add social-monitor/data/snapshots.json
           if git diff --cached --quiet; then
             echo "snapshot unchanged, skip commit"
           else
