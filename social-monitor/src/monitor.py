@@ -44,12 +44,19 @@ def run_once(cfg: Dict[str, Any]) -> Dict:
     cookies = os.environ.get(cfg.get("cookies_env", ""), "")
     snaps = load_snapshots(cfg["store"])
     all_new: List[Dict] = []
+    errors: List[Dict] = []  # 收集各平台抓取异常，单独告警
 
     for t in cfg["targets"]:
         try:
             items = extract(t["platform"], t["url"], cookies, cfg.get("selectors"))
         except Exception as exc:  # noqa: BLE001
             items = [{"id": "ERR", "url": t["url"], "text": f"抓取异常:{exc}", "time": ""}]
+
+        # 标记异常：id 为 ERR 视为该平台抓取失败（多为 Cookie 过期 / 页面结构变化）
+        for it in items:
+            if it.get("id") == "ERR":
+                errors.append({"name": t["name"], "platform": t["platform"],
+                               "text": it.get("text", "")})
 
         prev = snaps.get(t["name"], [])
         new, _removed = diff_snapshots(prev, items)
@@ -68,10 +75,20 @@ def run_once(cfg: Dict[str, Any]) -> Dict:
         push_markdown(cfg["dingtalk"]["webhook"], cfg["dingtalk"]["secret"],
                       "监测到新内容", md)
 
+    # 异常告警：任一平台失败即推送，避免 Cookie 过期后静默失效
+    if errors:
+        lines = ["#### ⚠️ 监测异常告警\n> 以下平台本轮抓取失败，请检查 Cookie 是否过期\n"]
+        for e in errors:
+            lines.append(f"- **{e['name']}** ({e['platform']})：{e['text']}")
+        push_markdown(cfg["dingtalk"]["webhook"], cfg["dingtalk"]["secret"],
+                      "监测异常", "\n".join(lines))
+
     # 每日存活播报（避免静默失败发现不了）
+    # GitHub runner 时区为 UTC，+8 换算北京时间；在每天北京时间 >=10:00 的首跑触发
     if cfg.get("heartbeat"):
         today = time.strftime("%Y-%m-%d")
-        if snaps.get("__heartbeat") != today:
+        bj_hour = (time.gmtime().tm_hour + 8) % 24
+        if bj_hour >= 10 and snaps.get("__heartbeat") != today:
             snaps["__heartbeat"] = today
             save_snapshots(cfg["store"], snaps)
             hb = (f"### 监测任务存活播报\n> 日期 {today} · 目标 {len(cfg['targets'])} 个"
