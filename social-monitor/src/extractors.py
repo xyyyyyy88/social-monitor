@@ -25,6 +25,37 @@ def _load_cookies(cookies: Any) -> List[Dict]:
     return cookies or []
 
 
+def _normalize_cookies_for_playwright(cookies: List[Dict]) -> List[Dict]:
+    """把 Cookie-Editor 导出的 cookie 转为 Playwright add_cookies 可接受的格式。
+
+    关键映射：
+    - sameSite: "no_restriction" -> "None", null -> "Lax"
+    - expirationDate -> expires
+    - 去掉 hostOnly/session/storeId 等 Playwright 不认的字段
+    - 过滤掉 name 为空的 cookie
+    """
+    _SAME_SITE_MAP = {"no_restriction": "None"}
+    result = []
+    for c in cookies:
+        if not c.get("name"):
+            continue
+        nc = {}
+        for k, v in c.items():
+            if k in ("hostOnly", "session", "storeId"):
+                continue
+            if k == "sameSite":
+                if v is None:
+                    v = "Lax"
+                elif isinstance(v, str):
+                    v = _SAME_SITE_MAP.get(v, v)
+            elif k == "expirationDate":
+                k = "expires"
+                v = int(v) if v else None
+            nc[k] = v
+        result.append(nc)
+    return result
+
+
 def _cookie_header(cookies: List[Dict]) -> str:
     return "; ".join(f"{c.get('name')}={c.get('value')}" for c in cookies)
 
@@ -42,6 +73,7 @@ def extract_weibo(url: str, cookies: Any = None) -> List[Dict]:
         "User-Agent": UA,
         "Referer": f"https://m.weibo.cn/u/{uid}",
         "Accept": "application/json",
+        "X-Requested-With": "XMLHttpRequest",
     })
     ck = _load_cookies(cookies)
     if ck:
@@ -72,6 +104,7 @@ def _playwright_extract(url: str, cookies: Any, item_sel: str) -> List[Dict]:
     from playwright.sync_api import sync_playwright  # 懒加载，避免无谓依赖
 
     ck = _load_cookies(cookies)
+    ck = _normalize_cookies_for_playwright(ck)
     # 补全 domain/path：Cookie-Editor 导出的已含 domain；手动导出的只有 name/value，
     # 需补上 domain 否则 Playwright add_cookies 会报错。
     try:
