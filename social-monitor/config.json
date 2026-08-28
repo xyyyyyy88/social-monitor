@@ -24,6 +24,26 @@
       "name": "抖音-示例账号B",
       "platform": "douyin",
       "url": "https://www.douyin.com/user/MS4wLjABAAAAJisjJc3xVJ4AqQwtWFxeE4E8FljhX7MCxRPgVnI7QIyNSDDV98u95_rgAiwTKf9J"
+    },
+    {
+      "name": "测试-微博",
+      "platform": "weibo",
+      "url": "https://weibo.com/u/5274907581"
+    },
+    {
+      "name": "测试-抖音",
+      "platform": "douyin",
+      "url": "https://www.douyin.com/user/self?from_tab_name=main"
+    },
+    {
+      "name": "测试-小红书",
+      "platform": "xiaohongshu",
+      "url": "https://www.xiaohongshu.com/user/profile/5ef20d2c000000000101d8c9"
+    },
+    {
+      "name": "测试-快手",
+      "platform": "kuaishou",
+      "url": "https://www.kuaishou.com/profile/3xqh5mn4saqmfnc?source=NewReco"
     }
   ],
   "dingtalk": {
@@ -37,6 +57,7 @@
   "cookies_env": "DTC_COOKIES",
   "heartbeat": true,
   "selectors": {
+    "weibo": "div.card-wrap, div.WB_feed_type",
     "douyin": "li[data-e2e=\"user-post-item\"], div[data-e2e=\"user-post-item\"]",
     "xiaohongshu": "section.note-item",
     "kuaishou": "div[data-e2e=\"feed-item\"], div.video-card"
