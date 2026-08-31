@@ -33,12 +33,7 @@
     {
       "name": "测试-抖音",
       "platform": "douyin",
-      "url": "https://m.douyin.com/share/user/MS4wLjABAAAAF2WSp1DKiZWDe3349f93G3fkthsxMJYVsyjzVlkSHMf-43AslQ9n88SL98AuPY3j"
-    },
-    {
-      "name": "测试-小红书",
-      "platform": "xiaohongshu",
-      "url": "https://www.xiaohongshu.com/user/profile/5ef20d2c000000000101d8c9"
+      "url": "https://www.douyin.com/user/MS4wLjABAAAAF2WSp1DKiZWDe3349f93G3fkthsxMJYVsyjzVlkSHMf-43AslQ9n88SL98AuPY3j"
     },
     {
       "name": "测试-快手",
