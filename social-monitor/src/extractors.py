@@ -1,10 +1,9 @@
 """四平台内容提取。
 
 所有平台统一使用 Playwright 无头 Chromium 渲染页面并提取，
-选择器可经 config.json 的 selectors 覆盖（这几个站 DOM 常变，需按实际调）。
+选择器可经 config.json 的 selectors 覆盖。
 
 返回统一结构：[{"id","url","text","time"}, ...]
-id 取内容唯一标识（用内容链接），用于差集比对。
 """
 import json
 from typing import List, Dict, Any, Optional
@@ -58,6 +57,18 @@ def _playwright_extract(url: str, cookies: Any, item_sel: str) -> List[Dict]:
 
     ck = _load_cookies(cookies)
     ck = _normalize_cookies_for_playwright(ck)
+
+    # 调试：打印 cookie 域名分布与过期条数（不含 value，安全）
+    try:
+        import time as _time
+        from collections import Counter
+        _dc = Counter(c.get("domain", "(无domain)") for c in ck)
+        _expired = sum(1 for c in ck if isinstance(c.get("expires"), (int, float))
+                       and 0 < c["expires"] < _time.time())
+        print(f"[COOKIE] 载入总数={len(ck)} 已过期={_expired} 域名分布={dict(_dc)}")
+    except Exception:  # noqa: BLE001
+        pass
+
     # 补全 domain/path：Cookie-Editor 导出的已含 domain；手动导出的只有 name/value，
     # 需补上 domain 否则 Playwright add_cookies 会报错。
     try:
@@ -79,7 +90,20 @@ def _playwright_extract(url: str, cookies: Any, item_sel: str) -> List[Dict]:
             context.add_cookies(ck)
         page = context.new_page()
         try:
-            page.goto(url, wait_until="domcontentloaded", timeout=45000)
+            # 海外服务器访问国内站点易超时：延长到 90s 并重试 2 次
+            _last_err = None
+            for _attempt in range(3):
+                try:
+                    page.goto(url, wait_until="domcontentloaded", timeout=90000)
+                    _last_err = None
+                    break
+                except Exception as _e:  # noqa: BLE001
+                    _last_err = _e
+                    print(f"[NET] 第{_attempt + 1}次加载失败 {url[:60]}: {type(_e).__name__}")
+                    if _attempt < 2:
+                        page.wait_for_timeout(3000)
+            if _last_err is not None:
+                raise _last_err
             try:
                 page.wait_for_selector(item_sel, timeout=20000)
             except Exception:  # noqa: BLE001
