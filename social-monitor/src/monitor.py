@@ -52,6 +52,18 @@ def run_once(cfg: Dict[str, Any]) -> Dict:
         except Exception as exc:  # noqa: BLE001
             items = [{"id": "ERR", "url": t["url"], "text": f"抓取异常:{exc}", "time": ""}]
 
+        # 调试日志：打印每个平台抓取结果
+        err_items = [it for it in items if it.get("id") == "ERR"]
+        ok_items = [it for it in items if it.get("id") != "ERR"]
+        print(f"[DEBUG] {t['name']} ({t['platform']}): 抓取 {len(items)} 条, "
+              f"其中异常 {len(err_items)} 条, 正常 {len(ok_items)} 条")
+        if err_items:
+            for e in err_items:
+                print(f"[DEBUG]   └─ 异常详情: {e.get('text', '')[:200]}")
+        if ok_items:
+            for o in ok_items[:3]:
+                print(f"[DEBUG]   └─ 样本: id={o.get('id', '')[:60]} | text={o.get('text', '')[:40]}")
+
         # 标记异常：id 为 ERR 视为该平台抓取失败（多为 Cookie 过期 / 页面结构变化）
         for it in items:
             if it.get("id") == "ERR":
