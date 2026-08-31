@@ -1,30 +1,12 @@
 {
   "微博-示例账号": [],
   "抖音-示例账号A": [],
-  "小红书-示例账号": [
-    "https://www.xiaohongshu.com/explore/6a45dad300000000080315e8",
-    "https://www.xiaohongshu.com/explore/6a45da22000000002100938f",
-    "https://www.xiaohongshu.com/explore/6a45d972000000000800296d"
-  ],
+  "小红书-示例账号": [],
   "快手-示例账号": [],
   "抖音-示例账号B": [],
   "__heartbeat": "2026-08-31",
   "测试-微博": [],
   "测试-抖音": [],
-  "测试-小红书": [
-    "https://www.xiaohongshu.com/explore/6a91421f000000000402bd26",
-    "https://www.xiaohongshu.com/explore/69f6285c000000003701d912",
-    "https://www.xiaohongshu.com/explore/69e3993f000000002102e54d",
-    "https://www.xiaohongshu.com/explore/69daec1d000000001a0271d6",
-    "https://www.xiaohongshu.com/explore/69cb792f0000000021039464",
-    "https://www.xiaohongshu.com/explore/69c8079f0000000021038a5c",
-    "https://www.xiaohongshu.com/explore/69c7bdac000000001a0285a9",
-    "https://www.xiaohongshu.com/explore/6965b18d000000002103e7b7",
-    "https://www.xiaohongshu.com/explore/6839b267000000000303c70c",
-    "https://www.xiaohongshu.com/explore/68136dd9000000000b015bb3",
-    "https://www.xiaohongshu.com/explore/66ca11a6000000001f03efe7",
-    "https://www.xiaohongshu.com/explore/66af6f80000000000503828a",
-    "https://www.xiaohongshu.com/explore/65340493000000002501668a"
-  ],
+  "测试-小红书": [],
   "测试-快手": []
 }
