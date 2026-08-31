@@ -3,11 +3,10 @@
 所有平台统一使用 Playwright 无头 Chromium 渲染页面并提取，
 选择器可经 config.json 的 selectors 覆盖（这几个站 DOM 常变，需按实际调）。
 
-所有提取函数返回统一结构：[{"id","url","text","time"}, ...]
+返回统一结构：[{"id","url","text","time"}, ...]
 id 取内容唯一标识（用内容链接），用于差集比对。
 """
 import json
-import re
 from typing import List, Dict, Any, Optional
 
 UA = ("Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 "
@@ -26,7 +25,6 @@ def _load_cookies(cookies: Any) -> List[Dict]:
 def _normalize_cookies_for_playwright(cookies: List[Dict]) -> List[Dict]:
     """把 Cookie-Editor 导出的 cookie 转为 Playwright add_cookies 可接受的格式。
 
-    关键映射：
     - sameSite: "no_restriction" -> "None", null -> "Lax"
     - expirationDate -> expires
     - 去掉 hostOnly/session/storeId 等 Playwright 不认的字段
@@ -99,6 +97,22 @@ def _playwright_extract(url: str, cookies: Any, item_sel: str) -> List[Dict]:
                     return { id: href || (el.outerHTML||'').slice(0, 80), url: href, text: txt, time: '' };
                 })""",
             )
+            # 登录墙检测：cookie 过期时页面要求登录，选择器匹配不到内容 → 静默失效。
+            # 抓到 0 条且页面含登录提示，判定为登录态失效，返回 ERR 触发钉钉告警。
+            if not items:
+                try:
+                    login_hint = page.evaluate("""() => {
+                        const txt = (document.body && document.body.innerText) || '';
+                        const markers = ['请登录', '登录后查看', '扫码登录', '手机号登录',
+                                         '账号登录', '立即登录', '登陆', '未登录'];
+                        return markers.some(m => txt.includes(m));
+                    }""")
+                    if login_hint:
+                        items = [{"id": "ERR", "url": url,
+                                  "text": "疑似登录态失效（页面提示登录，可能 cookie 已过期）",
+                                  "time": ""}]
+                except Exception:  # noqa: BLE001
+                    pass
         except Exception as exc:  # noqa: BLE001
             items = [{"id": "ERR", "url": url, "text": f"抓取异常:{exc}", "time": ""}]
         finally:
